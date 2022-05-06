@@ -33,16 +33,6 @@ FOREIGN KEY (department_ID) REFERENCES Departments(department_ID)
 ON DELETE CASCADE  
 ON UPDATE CASCADE);
 
-DELIMITER //
-CREATE TRIGGER instructorAdd BEFORE INSERT ON Instructors
-FOR EACH ROW
-BEGIN
-	IF (NEW.title != "Assistant Professor") AND (NEW.title != "Associate Professor") AND (NEW.title != "Professor ") THEN 
-		SIGNAL SQLSTATE '50001' SET MESSAGE_TEXT = 'Title is not valid!';
-	END IF;
-END;
-DELIMITER ;
-
 CREATE TABLE IF NOT EXISTS Classrooms (
 classroom_ID CHAR(20), 
 campus CHAR(20),
@@ -52,6 +42,7 @@ PRIMARY KEY (classroom_ID));
 CREATE TABLE IF NOT EXISTS Courses (
 course_ID CHAR(20),
 name CHAR(20),
+department_ID CHAR(20),
 credits INTEGER,
 quota INTEGER, 
 instructor_username CHAR(20) NOT NULL, 
@@ -79,25 +70,6 @@ FOREIGN KEY (course_ID) REFERENCES Courses(course_ID)
 ON DELETE CASCADE
 ON UPDATE CASCADE);
 
-DELIMITER //
-CREATE TRIGGER increaseCredits AFTER INSERT ON Grades
-FOR EACH ROW
-BEGIN
-	UPDATE Students SET completed_credits = (SELECT Students.completed_credits FROM Students WHERE Students.student_ID = NEW.student_ID) + (SELECT Courses.credits FROM Courses WHERE Courses.course_ID = NEW.course_ID);
-END
-DELIMITER ;
-
-
-DELIMITER //
-CREATE TRIGGER updateGPA AFTER INSERT ON Grades
-FOR EACH ROW FOLLOWS increaseCredits
-BEGIN
-	UPDATE Students SET GPA = (SELECT SUM(Courses.credits * Grades.grade) FROM Grades
-    INNER JOIN Courses ON Grades.course_ID=NEW.course_ID
-    WHERE Courses.student_ID=NEW.student_ID) / (SELECT Students.completed_credits FROM STUDENTS WHERE Students.student_ID=NEW.student_ID);
-END
-DELIMITER ;
-
 CREATE TABLE IF NOT EXISTS Enrollment (
 student_ID CHAR(20) NOT NULL,
 course_ID CHAR(20) NOT NULL, 
@@ -124,15 +96,73 @@ username CHAR(20),
 password CHAR(20), 
 PRIMARY KEY (username));
 
-
-DELIMITER //
-CREATE TRIGGER addDatabaseManager BEFORE INSERT ON DatabaseManager
-FOR EACH ROW 
+DELIMITER |
+CREATE TRIGGER instructorAdd BEFORE INSERT ON Instructors
+FOR EACH ROW
 BEGIN
-	IF ((SELECT COUNT(DatabaseManager.username) FROM DatabaseManager) >= 4)
+	IF (NEW.title != "Assistant Professor") AND (NEW.title != "Associate Professor") AND (NEW.title != "Professor ") THEN 
+		SIGNAL SQLSTATE '50001' SET MESSAGE_TEXT = 'Title is not valid!';
+	END IF;
+END;
+|
+DELIMITER ;
+
+
+DELIMITER |
+CREATE TRIGGER courseEnroll BEFORE INSERT ON Enrollment
+FOR EACH ROW
+BEGIN
+	IF(EXISTS(SELECT Grades.student_ID, Grades.Course_ID FROM Grades WHERE Grades.student_ID=NEW.student_ID AND Grades.course_ID=NEW.course_ID)) THEN
+		SIGNAL SQLSTATE '50001' SET MESSAGE_TEXT = 'Course is passed already';
+    END IF;
+END; 
+|
+DELIMITER ;
+
+
+DELIMITER |
+CREATE TRIGGER capacityEnough BEFORE INSERT ON Courses
+FOR EACH ROW
+BEGIN
+	IF(NEW.quota > (SELECT Classrooms.classroom_capacity FROM Classrooms WHERE Classrooms.classroom_ID=NEW.classroom_ID)) THEN
+		SIGNAL SQLSTATE '50001' SET MESSAGE_TEXT = 'Quota cannot exceed capacity';
+	END IF;
+END; 
+|
+DELIMITER ;
+
+DELIMITER |
+CREATE TRIGGER instructorDepartmentMatch BEFORE INSERT ON Courses
+FOR EACH ROW
+BEGIN
+	IF(NEW.department_ID!=(SELECT Departments.department_ID 
+							FROM Departments 
+                            INNER JOIN Instructors ON Departments.department_ID=Instructors.department_ID 
+                            WHERE Instructors.username=NEW.instructor_username)) THEN
+		SIGNAL SQLSTATE '50001' SET MESSAGE_TEXT = 'Quota cannot exceed capacity';
+	END IF;
+END; 
+|
+DELIMITER ;
+
+
+DELIMITER |
+CREATE TRIGGER increaseCredits AFTER INSERT ON Grades
+FOR EACH ROW
+BEGIN
+	UPDATE Students SET completed_credits = completed_credits + (SELECT Courses.credits FROM Courses WHERE course_ID=NEW.course_ID) WHERE student_ID=NEW.student_ID;
+END;
+|
+DELIMITER ;
+
+DELIMITER |
+CREATE TRIGGER addDatabaseManager BEFORE INSERT ON DatabaseManager
+FOR EACH ROW BEGIN
+	IF ((SELECT COUNT(DatabaseManager.username) FROM DatabaseManager) >= 4) THEN
 		SIGNAL SQLSTATE '50001' SET MESSAGE_TEXT = 'Capacity is reached';
 	END IF;
-END
+END;
+|
 DELIMITER ;
 
 
