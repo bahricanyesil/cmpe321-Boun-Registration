@@ -6,7 +6,6 @@ export default async (req, res) => {
     return res.status(400).json({ "resultMessage": "Please provide a name and course_ID to update a course." });
   }
 
-  //TODO: Test
   try {
     const db = await dbConnection();
     const query = `

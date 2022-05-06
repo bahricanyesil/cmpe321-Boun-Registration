@@ -10,8 +10,6 @@ const dbConfig = {
   port: dbPort
 };
 
-
-
 export default async (app) => {
   const dbConnection = mysql.createConnection(dbConfig);
   dbConnection.connect();

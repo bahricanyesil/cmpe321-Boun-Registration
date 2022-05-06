@@ -5,7 +5,8 @@ export default async (req, res) => {
     return res.status(400).json({ "resultMessage": "Please provide a slot to list the classrooms." });
   }
 
-  //TODO: Test this
+  if (req.query.slot < 1 || req.query.slot > 10) return res.status(400).json({ "resultMessage": "Time slot should be between 1 and 10 (inclusive)." });
+
   try {
     const db = await dbConnection();
     const query = `

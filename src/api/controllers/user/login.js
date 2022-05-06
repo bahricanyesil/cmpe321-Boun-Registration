@@ -8,8 +8,8 @@ export default async (req, res) => {
   }
 
   const userType = body.user_type;
-  if (userType !== 'Students' && userType !== 'Instructors' && userType !== 'Database Manager') {
-    return res.status(400).json({ "resultMessage": "Please provide a valid user type. Followings are allowed: Students, Instructors, Database Manager" });
+  if (userType !== 'Students' && userType !== 'Instructors' && userType !== 'DatabaseManager') {
+    return res.status(400).json({ "resultMessage": "Please provide a valid user type. Followings are allowed: Students, Instructors, DatabaseManager" });
   }
 
   try {

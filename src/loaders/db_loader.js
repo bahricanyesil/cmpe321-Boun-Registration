@@ -74,7 +74,7 @@ const coursesTableQuery = `CREATE TABLE IF NOT EXISTS Courses (
   ON DELETE CASCADE
   ON UPDATE CASCADE,
   UNIQUE(classroom_ID, time_slot),
-  CONSTRAINT time_slot_check CHECK(1 <= time_slot <= 10)
+  CONSTRAINT time_slot_check CHECK(1 <= time_slot AND  time_slot <= 10)
 );`;
 
 const gradesTableQuery = `CREATE TABLE IF NOT EXISTS Grades (
@@ -217,6 +217,22 @@ BEGIN
     END IF;
 END;`;
 
+const isValidTimeSlotTrigger = `
+CREATE TRIGGER IF NOT EXISTS isValidTimeSlot BEFORE INSERT ON Courses
+FOR EACH ROW
+BEGIN
+    IF(NEW.time_slot>10 OR NEW.time_slot<1) THEN
+        SIGNAL SQLSTATE '50001' SET MESSAGE_TEXT = 'Time slot is not valid, it should be between 1 and 10 (including).';
+    END IF;
+END;`;
+
+const removeEnrollmentTrigger = `
+CREATE TRIGGER IF NOT EXISTS removeEnrollment AFTER INSERT ON Grades
+FOR EACH ROW
+BEGIN
+    DELETE FROM Enrollment WHERE NEW.student_ID=Enrollment.student_ID AND NEW.course_ID=Enrollment.course_ID;
+END;`;
+
 export default async () => {
   try {
     const dbConnection = mysql.createConnection(dbConfig);
@@ -240,6 +256,8 @@ export default async () => {
     dbConnection.query(updateGPATrigger);
     dbConnection.query(areFourManagersTrigger);
     dbConnection.query(isGradingAllowedTrigger);
+    dbConnection.query(isValidTimeSlotTrigger);
+    dbConnection.query(removeEnrollmentTrigger);
     console.log("Successfully connected to the database.");
     return dbConnection;
   } catch (err) {

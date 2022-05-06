@@ -1,20 +1,29 @@
 import dbConnection from '../../../loaders/db_loader.js';
 
 export default async (req, res) => {
-  const body = req.body;
-  if (!body || !body.student_ID) {
-    return res.status(400).json({ "resultMessage": "Please provide a student_ID to enroll." });
+  if (!req.query.student_ID) {
+    return res.status(400).json({ "resultMessage": "Please provide a student_ID to see enrolled courses." });
   }
 
   try {
     const db = await dbConnection();
 
     const query = `
-      SELECT Enrollment.course_ID, name, grade
+      SELECT Enrollment.course_ID, name, Grades.grade
       FROM Enrollment
-      FULL OUTER JOIN Grades ON Grades.course_ID = Enrollment.course_ID
-      INNER JOIN Courses ON Courses.course_ID = Enrollment.course_ID
-      WHERE Enrollment.student_ID = "${body.student_ID}";
+      LEFT JOIN Grades ON Grades.course_ID = Enrollment.course_ID
+      INNER JOIN Courses
+      ON Courses.course_ID = Enrollment.course_ID
+      WHERE Enrollment.student_ID = "${req.query.student_ID}"
+
+      UNION
+
+      SELECT Grades.course_ID, Courses.name, Grades.grade
+      FROM Grades
+      LEFT JOIN Enrollment ON Grades.course_ID = Enrollment.course_ID
+      INNER JOIN Courses
+      ON Courses.course_ID = Grades.course_ID
+      WHERE Grades.student_ID = "${req.query.student_ID}";
     `;
 
     return await db.query(query, (err, data) => {

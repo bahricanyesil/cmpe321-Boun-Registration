@@ -5,23 +5,35 @@ export default async (req, res) => {
     return res.status(400).json({ "resultMessage": "Please provide the username of the instructor." });
   }
 
-  //TODO: Test this
   try {
     const db = await dbConnection();
-    const query = `
+    const preQuery = `
       SELECT *
-      FROM Courses
-      INNER JOIN Classrooms
-      ON Classrooms.classroom_ID = Courses.classroom_ID
-      WHERE instructor_username = "${req.query.username}";
+      FROM Instructors
+      WHERE Instructors.username = "${req.query.username}"  
     `;
 
-    return await db.query(query, (err, data) => {
+    return await db.query(preQuery, async (err, data) => {
       if (err) {
         console.log(err);
         return res.status(500).json({ resultMessage: `An error occurred in the db query. Err: ${err.message}` });
       }
-      return res.status(200).json({ resultMessage: "Courses are successfully fetched.", courses: data });
+      const user = data[0];
+      if (!user) return res.status(404).json({ resultMessage: "Instructor with the given username could not find." });
+      const query = `
+        SELECT *
+        FROM Courses
+        INNER JOIN Classrooms
+        ON Classrooms.classroom_ID = Courses.classroom_ID
+        WHERE instructor_username = "${req.query.username}";
+      `;
+      return await db.query(query, (err, data) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({ resultMessage: `An error occurred in the db query. Err: ${err.message}` });
+        }
+        return res.status(200).json({ resultMessage: "Courses are successfully fetched.", courses: data });
+      });
     });
   } catch (err) {
     console.log(err);

@@ -7,10 +7,7 @@ export default async (req, res) => {
 
   try {
     const db = await dbConnection();
-    //TODO: Delete all related data: Previous Grades - Current Courses.
-    const query = `
-      DELETE FROM Students WHERE student_ID = "${req.query.id}";
-    `;
+    const query = ` DELETE FROM Students WHERE student_ID = "${req.query.id}"; `;
 
     return await db.query(query, (err, data) => {
       if (err) {

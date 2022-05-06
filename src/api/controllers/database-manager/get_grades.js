@@ -5,23 +5,35 @@ export default async (req, res) => {
     return res.status(400).json({ "resultMessage": "Please provide the id of the student." });
   }
 
-  //TODO: Test this
   try {
     const db = await dbConnection();
-    const query = `
+    const preQuery = `
       SELECT *
-      FROM Grades
-      INNER JOIN Courses
-      ON Courses.course_ID = Grades.course_ID
-      WHERE student_ID = "${req.query.id}";
+      FROM Students
+      WHERE Students.student_ID = "${req.query.id}"  
     `;
 
-    return await db.query(query, (err, data) => {
+    return await db.query(preQuery, async (err, data) => {
       if (err) {
         console.log(err);
         return res.status(500).json({ resultMessage: `An error occurred in the db query. Err: ${err.message}` });
       }
-      return res.status(200).json({ resultMessage: "Grades are successfully fetched.", grades: data });
+      const user = data[0];
+      if (!user) return res.status(404).json({ resultMessage: "Student with the given id could not find." });
+      const query = `
+        SELECT Grades.Course_ID, name, grade
+        FROM Grades
+        INNER JOIN Courses
+        ON Courses.course_ID = Grades.course_ID
+        WHERE student_ID = "${req.query.id}";
+      `;
+      return await db.query(query, (err, data) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({ resultMessage: `An error occurred in the db query. Err: ${err.message}` });
+        }
+        return res.status(200).json({ resultMessage: "Grades are successfully fetched.", grades: data });
+      });
     });
   } catch (err) {
     console.log(err);
