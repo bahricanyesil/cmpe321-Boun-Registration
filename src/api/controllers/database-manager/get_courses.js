@@ -1,0 +1,30 @@
+import dbConnection from '../../../loaders/db_loader.js';
+
+export default async (req, res) => {
+  if (!req.query.username) {
+    return res.status(400).json({ "resultMessage": "Please provide the username of the instructor." });
+  }
+
+  //TODO: Test this
+  try {
+    const db = await dbConnection();
+    const query = `
+      SELECT *
+      FROM Courses
+      INNER JOIN Classrooms
+      ON Classrooms.classroom_ID = Courses.classroom_ID
+      WHERE instructor_username = "${req.query.username}";
+    `;
+
+    return await db.query(query, (err, data) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ resultMessage: `An error occurred in the db query. Err: ${err.message}` });
+      }
+      return res.status(200).json({ resultMessage: "Courses are successfully fetched.", courses: data });
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ resultMessage: `An unexpected server error occurred. Err: ${err.message}` });
+  }
+};
