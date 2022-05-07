@@ -13,12 +13,12 @@ export default async (req, res) => {
     return await db.query(query, (err, data) => {
       if (err) {
         console.log(err);
-        return res.status(500).json({ resultMessage: `An error occurred in the db query. Err: ${err.message}` });
+        return res.status(500).render('pages/db-manager/instructor_home', { resultMessage: `An error occurred in the db query. Err: ${err.message}` });
       }
-      return res.status(200).json({ resultMessage: "Instructors are successfully fetched.", instructors: data });
+      return res.status(200).render('pages/db-manager/instructor_home', { instructors: data });
     });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ resultMessage: `An unexpected server error occurred. Err: ${err.message}` });
+    return res.status(500).render('pages/db-manager/instructor_home', { resultMessage: `An unexpected server error occurred. Err: ${err.message}` });
   }
 };

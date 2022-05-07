@@ -1,8 +1,9 @@
 import dbConnection from '../../../loaders/db_loader.js';
 
 export default async (req, res) => {
+  const redirectPage = 'pages/db-manager/course_grade';
   if (!req.query.id) {
-    return res.status(400).json({ "resultMessage": "Please provide the id of the course." });
+    return res.status(400).render(redirectPage, { "resultMessage": "Please provide the id of the course." });
   }
 
   try {
@@ -16,10 +17,10 @@ export default async (req, res) => {
     return await db.query(preQuery, async (err, data) => {
       if (err) {
         console.log(err);
-        return res.status(500).json({ resultMessage: `An error occurred in the db query. Err: ${err.message}` });
+        return res.status(500).render(redirectPage, { resultMessage: `An error occurred in the db query. Err: ${err.message}` });
       }
       const course = data[0];
-      if (!course) return res.status(404).json({ resultMessage: "Course with the given id could not find." });
+      if (!course) return res.status(404).render(redirectPage, { resultMessage: "Course with the given id could not find." });
       const query = `
         SELECT Grades.course_ID, name, AVG(Grades.grade) as average_grade
         FROM Grades
@@ -30,13 +31,13 @@ export default async (req, res) => {
       return await db.query(query, (err, data) => {
         if (err) {
           console.log(err);
-          return res.status(500).json({ resultMessage: `An error occurred in the db query. Err: ${err.message}` });
+          return res.status(500).render(redirectPage, { resultMessage: `An error occurred in the db query. Err: ${err.message}` });
         }
-        return res.status(200).json({ resultMessage: "Average grade of the course is successfully fetched.", grades: data });
+        return res.status(200).render(redirectPage, { grade: data[0] });
       });
     });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ resultMessage: `An unexpected server error occurred. Err: ${err.message}` });
+    return res.status(500).render(redirectPage, { resultMessage: `An unexpected server error occurred. Err: ${err.message}` });
   }
 };

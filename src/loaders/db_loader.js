@@ -141,7 +141,7 @@ const isPassedBeforeTrigger = `
 CREATE TRIGGER IF NOT EXISTS isPassedBefore BEFORE INSERT ON Enrollment
 FOR EACH ROW
 BEGIN
-    IF(EXISTS(SELECT Grades.student_ID, Grades.Course_ID FROM Grades WHERE Grades.student_ID=NEW.student_ID AND Grades.course_ID=NEW.course_ID)) THEN
+    IF(EXISTS(SELECT Grades.student_ID, Grades.course_ID FROM Grades WHERE Grades.student_ID=NEW.student_ID AND Grades.course_ID=NEW.course_ID)) THEN
         SIGNAL SQLSTATE '50001' SET MESSAGE_TEXT = 'Course is passed already';
     END IF;
 END;`;
@@ -233,7 +233,7 @@ BEGIN
     DELETE FROM Enrollment WHERE NEW.student_ID=Enrollment.student_ID AND NEW.course_ID=Enrollment.course_ID;
 END;`;
 
-export default async () => {
+export default () => {
   try {
     const dbConnection = mysql.createConnection(dbConfig);
     dbConnection.query(departmentTableQuery);
@@ -258,7 +258,6 @@ export default async () => {
     dbConnection.query(isGradingAllowedTrigger);
     dbConnection.query(isValidTimeSlotTrigger);
     dbConnection.query(removeEnrollmentTrigger);
-    console.log("Successfully connected to the database.");
     return dbConnection;
   } catch (err) {
     console.log("An error occurred while connecting to the database.");

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <style>
+    table,
+    th,
+    td {
+      border: 2px solid white;
+      border-collapse: collapse;
+    }
+
+    th {
+      padding-right: 10px;
+      padding-left: 10px;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      background-color: bisque;
+    }
+
+    td {
+      padding-right: 10px;
+      padding-left: 10px;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      background-color: #96D4D4;
+    }
+
+    .center {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border: 5px solid red;
+      padding: 10px;
+    }
+  </style>
+</head>
+
+<body class="container">
+
+  <header>
+    <%- include('../../partials/home/db_manager_header'); %>
+  </header>
+
+  <main>
+    <div style="padding: 20px;" id="container" class="jumbotron">
+      <table style="border-spacing: 10px;">
+        <tr>
+          <th></th>
+          <th>Username</th>
+          <th>Name</th>
+          <th>Surname</th>
+          <th>Email</th>
+          <th>Department</th>
+          <th>Title</th>
+          <th>Courses</th>
+          <th>Update Instructor</th>
+        </tr>
+
+        <% for (var i=0; i < locals.instructors.length; i++) { %>
+          <tr>
+            <td>
+              <%= i+1 %> -
+            </td>
+            <td>
+              <%= locals.instructors[i].username !=null ? locals.instructors[i].username : 'null' %>
+            </td>
+            <td>
+              <%= locals.instructors[i].name !=null ? locals.instructors[i].name : 'null' %>
+            </td>
+            <td>
+              <%= locals.instructors[i].surname !=null ? locals.instructors[i].surname : 'null' %>
+            </td>
+            <td>
+              <%= locals.instructors[i].email !=null ? locals.instructors[i].email : 'null' %>
+            </td>
+            <td>
+              <%= locals.instructors[i].department_name !=null ? locals.instructors[i].department_name : 'null' %>
+            </td>
+            <td>
+              <%= locals.instructors[i].title !=null ? locals.instructors[i].title : 'null' %>
+            </td>
+            <td>
+              <form method="get" action="/dbManager/course">
+                <input type="hidden" name="username" value=<%=locals.instructors[i].username %> />
+                <button type="submit">See the courses</button>
+              </form>
+            </td>
+            <td align="center">
+              <a style="text-align: center; font-weight: 800; color: white" , class="item"
+                href="/dbManager/update-instructor?username=<%= locals.instructors[i].username%>&title=<%= locals.instructors[i].title%>">
+                Update
+              </a>
+            </td>
+          </tr>
+          <% } %>
+      </table>
+    </div>
+
+    <% if(locals.resultMessage) { %>
+      <div class="center" role="alert" style="align-items: center;">
+        <%= '! ' + resultMessage + ' !' %>
+      </div>
+      <% } %>
+  </main>
+</body>
+
+</html>

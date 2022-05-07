@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <style>
+    .center {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border: 5px solid red;
+      padding: 10px;
+    }
+  </style>
+</head>
+
+<body class="container">
+
+  <header>
+    <%- include('../../partials/header'); %>
+  </header>
+
+  <main>
+    <div class="jumbotron">
+      <style>
+        body {
+          padding: 40px;
+        }
+      </style>
+      <h1>Welcome <%= locals.type %>!</h1>
+      <p>Login for more.</p>
+      <form method="post" action="/<%= locals.type %>/login">
+        <p>
+          <label for="username">Username:</label>
+          <input type="text" name="username" id="username">
+        </p>
+        <p>
+          <label for="password">Password:</label>
+          <input type="text" name="password" id="password">
+        </p>
+        <p>
+          <input type="submit" value="Login">
+        </p>
+
+        <style>
+          body {
+            padding: 40px;
+          }
+        </style>
+      </form>
+    </div>
+
+    <% if(locals.resultMessage) { %>
+      <div class="center" role="alert" style="align-items: center;">
+        <%= '! ' + resultMessage + ' !' %>
+      </div>
+      <% } %>
+  </main>
+</body>
+
+</html>

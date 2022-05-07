@@ -1,8 +1,9 @@
 import dbConnection from '../../../loaders/db_loader.js';
 
 export default async (req, res) => {
+  const redirectPage = 'pages/db-manager/student_grades';
   if (!req.query.id) {
-    return res.status(400).json({ "resultMessage": "Please provide the id of the student." });
+    return res.status(400).render(redirectPage, { "resultMessage": "Please provide the id of the student." });
   }
 
   try {
@@ -16,12 +17,12 @@ export default async (req, res) => {
     return await db.query(preQuery, async (err, data) => {
       if (err) {
         console.log(err);
-        return res.status(500).json({ resultMessage: `An error occurred in the db query. Err: ${err.message}` });
+        return res.status(500).render(redirectPage, { resultMessage: `An error occurred in the db query. Err: ${err.message}` });
       }
       const user = data[0];
-      if (!user) return res.status(404).json({ resultMessage: "Student with the given id could not find." });
+      if (!user) return res.status(404).render(redirectPage, { resultMessage: "Student with the given id could not find." });
       const query = `
-        SELECT Grades.Course_ID, name, grade
+        SELECT Grades.course_ID, name, grade
         FROM Grades
         INNER JOIN Courses
         ON Courses.course_ID = Grades.course_ID
@@ -30,13 +31,13 @@ export default async (req, res) => {
       return await db.query(query, (err, data) => {
         if (err) {
           console.log(err);
-          return res.status(500).json({ resultMessage: `An error occurred in the db query. Err: ${err.message}` });
+          return res.status(500).render(redirectPage, { resultMessage: `An error occurred in the db query. Err: ${err.message}` });
         }
-        return res.status(200).json({ resultMessage: "Grades are successfully fetched.", grades: data });
+        return res.status(200).render(redirectPage, { grades: data });
       });
     });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ resultMessage: `An unexpected server error occurred. Err: ${err.message}` });
+    return res.status(200).json(redirectPage, { resultMessage: `An unexpected server error occurred. Err: ${err.message}` });
   }
 };

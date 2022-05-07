@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { addInstructor, addStudent, deleteStudent, getCourses, getGradeAverage, getGrades, getInstructors, getStudents, updateInstructor } from '../controllers/database-manager/index.js';
+import { addInstructor, addStudent, deleteStudent, getCourses, getGradeAverage, getGrades, getInstructors, getStudents, login, updateInstructor } from '../controllers/database-manager/index.js';
 
 const router = Router();
 
@@ -9,11 +9,12 @@ router.get('/grade', getGrades);
 router.get('/gradeAverage', getGradeAverage);
 router.get('/course', getCourses);
 
+router.post('/login', login);
 router.post('/student', addStudent);
 router.post('/instructor', addInstructor);
 
-router.put('/instructor', updateInstructor);
+router.post('/updateInstructor', updateInstructor);
 
-router.delete('/student', deleteStudent);
+router.post('/deleteStudent', deleteStudent);
 
 export default router

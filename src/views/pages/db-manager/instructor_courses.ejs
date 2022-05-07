@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <style>
+    table,
+    th,
+    td {
+      border: 2px solid white;
+      border-collapse: collapse;
+    }
+
+    th {
+      padding-right: 10px;
+      padding-left: 10px;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      background-color: bisque;
+    }
+
+    td {
+      padding-right: 10px;
+      padding-left: 10px;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      background-color: #96D4D4;
+    }
+
+
+    .center {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border: 5px solid red;
+      padding: 10px;
+    }
+  </style>
+</head>
+
+<body class="container">
+  <header>
+    <%- include('../../partials/default_header'); %>
+  </header>
+
+  <mains>
+    <% if(locals.courses) { %>
+      <div style="padding: 20px;" id="container" class="jumbotron">
+
+        <table style="border-spacing: 10px;">
+          <tr>
+            <th></th>
+            <th>Course ID</th>
+            <th>Course Name</th>
+            <th>Classroom ID</th>
+            <th>Campus</th>
+            <th>Time Slot</th>
+            <th>Average Grade of the Course</th>
+          </tr>
+
+          <% for (var i=0; i < locals.courses.length; i++) { %>
+            <tr>
+              <td>
+                <%= i+1 %> -
+              </td>
+              <td>
+                <%= locals.courses[i].course_ID !=null ? locals.courses[i].course_ID : 'null' %>
+              </td>
+              <td>
+                <%= locals.courses[i].name !=null ? locals.courses[i].name : 'null' %>
+              </td>
+              <td>
+                <%= locals.courses[i].classroom_ID !=null ? locals.courses[i].classroom_ID : 'null' %>
+              </td>
+              <td>
+                <%= locals.courses[i].campus !=null ? locals.courses[i].campus : 'null' %>
+              </td>
+              <td>
+                <%= locals.courses[i].time_slot !=null ? locals.courses[i].time_slot : 'null' %>
+              </td>
+              <td>
+                <form method="get" action="/dbManager/gradeAverage">
+                  <input type="hidden" name="id" value=<%=locals.courses[i].course_ID%> />
+                  <button type="submit">See the grade average of the course</button>
+                </form>
+              </td>
+            </tr>
+            <% } %>
+        </table>
+        <% } %>
+      </div>
+
+      <% if(locals.resultMessage) { %>
+        <div class="center" role="alert" style="align-items: center;">
+          <%= '! ' + resultMessage + ' !' %>
+        </div>
+        <% } %>
+          </main>
+</body>
+
+</html>

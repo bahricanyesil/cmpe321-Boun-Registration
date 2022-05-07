@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <style>
+    table {
+      border: 2px solid white;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th,
+    td {
+      border: 2px solid white;
+      border-collapse: collapse;
+    }
+
+    th {
+      padding-right: 10px;
+      padding-left: 10px;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      background-color: bisque;
+    }
+
+    td {
+      padding-right: 10px;
+      padding-left: 10px;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      background-color: #96D4D4;
+    }
+
+    .center {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border: 5px solid red;
+      padding: 10px;
+    }
+  </style>
+</head>
+
+<body class="container">
+
+  <header>
+    <%- include('../../partials/home/db_manager_header'); %>
+  </header>
+
+  <main>
+    <div style="padding: 20px;" id="container" class="jumbotron">
+
+      <a style="margin-top: 5px; color: white; font-size: 16px; background-color:royalblue; padding:8px" class="item"
+        href="/dbManager/student/add">
+        + Add New Student
+      </a>
+
+      <table style="border-spacing: 15px;">
+        <tr>
+          <th></th>
+          <th>Username</th>
+          <th>Name</th>
+          <th>Surname</th>
+          <th>Email</th>
+          <th>Department</th>
+          <th>Completed Credits</th>
+          <th>GPA</th>
+          <th>Grades</th>
+          <th>Delete</th>
+        </tr>
+
+        <% for (var i=0; i < locals.students.length; i++) { %>
+          <tr>
+            <td>
+              <%= i+1 %> -
+            </td>
+            <td>
+              <%= locals.students[i].username !=null ? locals.students[i].username : 'null' %>
+            </td>
+            <td>
+              <%= locals.students[i].name !=null ? locals.students[i].name : 'null' %>
+            </td>
+            <td>
+              <%= locals.students[i].surname !=null ? locals.students[i].surname : 'null' %>
+            </td>
+            <td>
+              <%= locals.students[i].email !=null ? locals.students[i].email : 'null' %>
+            </td>
+            <td>
+              <%= locals.students[i].department_name !=null ? locals.students[i].department_name : 'null' %>
+            </td>
+            <td>
+              <%= locals.students[i].completed_credits !=null ? locals.students[i].completed_credits : 'null' %>
+            </td>
+            <td>
+              <%= locals.students[i].gpa !=null ? locals.students[i].gpa : 'null' %>
+            </td>
+            <td>
+              <form method="get" action="/dbManager/grade">
+                <input type="hidden" name="id" value=<%=locals.students[i].student_ID%>/>
+                <button type="submit">See the grades</button>
+              </form>
+            </td>
+            <td>
+              <form method="post" action="/dbManager/deleteStudent?id=<%=locals.students[i].student_ID%>">
+                <button type="submit">Delete Student</button>
+              </form>
+            </td>
+          </tr>
+          <% } %>
+      </table>
+    </div>
+
+    <% if(locals.resultMessage) { %>
+
+      <div class="center" role="alert" style="align-items: center;">
+        <%= '! ' + resultMessage + ' !' %>
+      </div>
+      <% } %>
+  </main>
+</body>
+
+</html>

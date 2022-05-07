@@ -13,6 +13,10 @@ const dbConfig = {
 export default async (app) => {
   const dbConnection = mysql.createConnection(dbConfig);
   dbConnection.connect();
-  dbConnection.query(`CREATE DATABASE IF NOT EXISTS ${dbName};`, (err, res) => dbLoader());
+  dbConnection.query(`CREATE DATABASE IF NOT EXISTS ${dbName};`, (err, res) => {
+    if (err) console.log('An error has occurred: ', err)
+    else console.log("Successfully connected to the database.");
+    return dbLoader();
+  });
   expressLoader(app);
 }

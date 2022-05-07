@@ -1,8 +1,9 @@
 import dbConnection from '../../../loaders/db_loader.js';
 
 export default async (req, res) => {
+  const redirectPage = 'pages/db-manager/instructor_courses';
   if (!req.query.username) {
-    return res.status(400).json({ "resultMessage": "Please provide the username of the instructor." });
+    return res.status(400).render(redirectPage, { "resultMessage": "Please provide the username of the instructor." });
   }
 
   try {
@@ -16,10 +17,10 @@ export default async (req, res) => {
     return await db.query(preQuery, async (err, data) => {
       if (err) {
         console.log(err);
-        return res.status(500).json({ resultMessage: `An error occurred in the db query. Err: ${err.message}` });
+        return res.status(500).render(redirectPage, { resultMessage: `An error occurred in the db query. Err: ${err.message}` });
       }
       const user = data[0];
-      if (!user) return res.status(404).json({ resultMessage: "Instructor with the given username could not find." });
+      if (!user) return res.status(404).render(redirectPage, { resultMessage: "Instructor with the given username could not find." });
       const query = `
         SELECT *
         FROM Courses
@@ -30,13 +31,13 @@ export default async (req, res) => {
       return await db.query(query, (err, data) => {
         if (err) {
           console.log(err);
-          return res.status(500).json({ resultMessage: `An error occurred in the db query. Err: ${err.message}` });
+          return res.status(500).render(redirectPage, { resultMessage: `An error occurred in the db query. Err: ${err.message}` });
         }
-        return res.status(200).json({ resultMessage: "Courses are successfully fetched.", courses: data });
+        return res.status(200).render(redirectPage, { courses: data });
       });
     });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ resultMessage: `An unexpected server error occurred. Err: ${err.message}` });
+    return res.status(500).render(redirectPage, { resultMessage: `An unexpected server error occurred. Err: ${err.message}` });
   }
 };

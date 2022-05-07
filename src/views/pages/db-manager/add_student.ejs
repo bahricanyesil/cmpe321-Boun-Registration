@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+  integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+
+<head>
+  <style>
+    .center {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border: 5px solid red;
+      padding: 10px;
+      margin-top: 80px;
+    }
+  </style>
+</head>
+
+<body class="container">
+  <header>
+    <%- include('../../partials/default_header'); %>
+  </header>
+
+  <main>
+    <div style="padding: 20px;" id="container" class="jumbotron">
+      <div class="w3-container">
+        <div class="w3-show-inline-block">
+          <div class="w3-bar">
+            <form method="post" action="/dbManager/student">
+              <p>
+                <label for="student_ID">Student ID:</label>
+                <input type="text" name="student_ID" id="student_ID">
+              </p>
+              <p>
+                <label for="username">Username:</label>
+                <input type="text" name="username" id="username">
+              </p>
+              <p>
+                <label for="password">Password:</label>
+                <input type="text" name="password" id="password">
+              </p>
+              <p>
+                <label for="name">Name:</label>
+                <input type="text" name="name" id="name">
+              </p>
+              <p>
+                <label for="surname">Surname:</label>
+                <input type="text" name="surname" id="surname">
+              </p>
+              <p>
+                <label for="email">Email:</label>
+                <input type="text" name="email" id="email">
+              </p>
+              <p>
+                <label for="department_ID">Department ID:</label>
+                <input type="text" name="department_ID" id="department_ID">
+              </p>
+              <button type="submit">Add</button>
+            </form>
+            <form style="padding-top:10px" method="get" action="/dbManager/student">
+              <button type="submit">Back</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <% if(locals.resultMessage) { %>
+      <div class="center" role="alert" style="align-items: center;">
+        <%= '! ' + resultMessage + ' !' %>
+      </div>
+      <% } %>
+  </main>
+</body>
+
+</html>
