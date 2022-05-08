@@ -4,7 +4,7 @@ export default async (req, res) => {
   try {
     const db = await dbConnection();
     const query = `
-      SELECT username, Students.name, surname, email, Students.department_ID, completed_credits, gpa, Departments.name as department_name
+      SELECT Students.student_ID, username, Students.name, surname, email, Students.department_ID, completed_credits, gpa, Departments.name as department_name
       FROM Students
       INNER JOIN Departments
       ON Departments.department_ID = Students.department_ID
