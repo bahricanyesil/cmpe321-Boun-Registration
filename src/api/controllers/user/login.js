@@ -4,7 +4,7 @@ import dbConnection from '../../../loaders/db_loader.js';
 export default async (req, res) => {
   const body = req.body;
   if (!body || !body.username || !body.password || !body.user_type) {
-    return res.status(400).json({ "resultMessage": "Please provide an username, password and user type." });
+    return res.status(400).json({ "resultMessage": "Please provide a username, password and user type." });
   }
 
   const userType = body.user_type;
