@@ -111,7 +111,7 @@ DELIMITER |
 CREATE TRIGGER courseEnroll BEFORE INSERT ON Enrollment
 FOR EACH ROW
 BEGIN
-	IF(EXISTS(SELECT Grades.student_ID, Grades.Course_ID FROM Grades WHERE Grades.student_ID=NEW.student_ID AND Grades.course_ID=NEW.course_ID)) THEN
+	IF(EXISTS(SELECT Grades.student_ID, Grades.course_ID FROM Grades WHERE Grades.student_ID=NEW.student_ID AND Grades.course_ID=NEW.course_ID)) THEN
 		SIGNAL SQLSTATE '50001' SET MESSAGE_TEXT = 'Course is passed already';
     END IF;
 END; 

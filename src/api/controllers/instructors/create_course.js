@@ -14,7 +14,7 @@ export default async (req, res) => {
     // We did controls of the 12th item with Triggers.
     const query = `
       INSERT INTO Courses (course_ID, name, credits, quota, instructor_username, classroom_ID, time_slot, department_ID)
-      VALUES ("${body.course_ID}", "${body.name}", ${body.credits}, ${body.quota}, "${body.instructor_username}", ${body.classroom_ID}, ${body.time_slot}, "${body.department_ID}"); 
+      VALUES ("${body.course_ID}", "${body.name}", ${body.credits}, ${body.quota}, "${body.instructor_username}", "${body.classroom_ID}", ${body.time_slot}, "${body.department_ID}"); 
     `;
 
     return await db.query(query, (err, data) => {

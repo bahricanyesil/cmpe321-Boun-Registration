@@ -21,7 +21,7 @@ export default async (req, res) => {
       const user = data[0];
       if (!user) return res.status(404).json({ resultMessage: "Student with the given id could not find." });
       const query = `
-        SELECT Grades.Course_ID, name, grade
+        SELECT Grades.course_ID, name, grade
         FROM Grades
         INNER JOIN Courses
         ON Courses.course_ID = Grades.course_ID

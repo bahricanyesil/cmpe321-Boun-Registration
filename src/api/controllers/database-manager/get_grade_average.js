@@ -32,7 +32,7 @@ export default async (req, res) => {
           console.log(err);
           return res.status(500).json({ resultMessage: `An error occurred in the db query. Err: ${err.message}` });
         }
-        return res.status(200).json({ resultMessage: "Average grade of the course is successfully fetched.", grades: data });
+        return res.status(200).json({ resultMessage: "Average grade of the course is successfully fetched.", grade: data[0] });
       });
     });
   } catch (err) {

@@ -16,7 +16,7 @@ export default async (req, res) => {
     const hashedPassword = crypto.createHash('sha256').update(body.password).digest('base64');
     const query = `
       INSERT INTO Instructors (username, password, name, surname, email, department_ID, title)
-      VALUES ("${body.username}", "${hashedPassword}", "${body.name}", "${body.surname}", "${body.email}", ${body.department_ID}, "${body.title}"); 
+      VALUES ("${body.username}", "${hashedPassword}", "${body.name}", "${body.surname}", "${body.email}", "${body.department_ID}", "${body.title}"); 
     `;
 
     return await db.query(query, (err, data) => {
