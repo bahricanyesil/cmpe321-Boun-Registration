@@ -4,7 +4,7 @@ import dbConnection from '../../../loaders/db_loader.js';
 export default async (req, res) => {
   const body = req.body;
   if (!body || !body.student_ID || !body.username || !body.password || !body.name || !body.surname || !body.email || !body.department_ID) {
-    return res.status(400).json({ "resultMessage": "Please provide all required fields to create a user." });
+    return res.status(400).json({ "resultMessage": "Please provide all required fields to create a student." });
   }
 
   try {

@@ -3,7 +3,7 @@ import dbConnection from '../../../loaders/db_loader.js';
 export default async (req, res) => {
   const body = req.body;
   if (!body || !body.course_ID || !body.name || !body.credits || !body.classroom_ID || !body.instructor_username || !body.time_slot || !body.quota || !body.department_ID) {
-    return res.status(400).json({ "resultMessage": "Please provide all required fields to create a course." });
+    return res.status(400).json({ "resultMessage": "Please provide all required fields to create a instructor." });
   }
 
   if (body.quota < 0) return res.status(400).json({ "resultMessage": "Quota cannot be less than 0." });
