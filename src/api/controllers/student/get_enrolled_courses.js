@@ -7,24 +7,22 @@ export default async (req, res) => {
 
   try {
     const db = await dbConnection();
-
     const query = `
-      SELECT Enrollment.course_ID, name, Grades.grade
+      SELECT Enrollment.course_ID, Courses.name,
+      CASE 
+      WHEN EXISTS(SELECT * FROM Enrollment) THEN NULL
+      END AS "grade"
       FROM Enrollment
-      LEFT JOIN Grades ON Grades.course_ID = Enrollment.course_ID
-      INNER JOIN Courses
-      ON Courses.course_ID = Enrollment.course_ID
+      INNER JOIN Courses ON Courses.course_ID=Enrollment.course_ID
       WHERE Enrollment.student_ID = "${req.query.student_ID}"
 
       UNION
 
       SELECT Grades.course_ID, Courses.name, Grades.grade
       FROM Grades
-      LEFT JOIN Enrollment ON Grades.course_ID = Enrollment.course_ID
-      INNER JOIN Courses
-      ON Courses.course_ID = Grades.course_ID
-      WHERE Grades.student_ID = "${req.query.student_ID}";
-    `;
+      INNER JOIN Courses ON Courses.course_ID=Grades.course_ID
+      WHERE Grades.student_ID = "${req.query.student_ID}"
+    ;`;
 
     return await db.query(query, (err, data) => {
       if (err) {

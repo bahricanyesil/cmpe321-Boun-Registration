@@ -21,11 +21,12 @@ export default async (req, res) => {
       const course = data[0];
       if (!course) return res.status(404).json({ resultMessage: "Course with the given id could not find." });
       const query = `
-        SELECT Grades.course_ID, name, AVG(Grades.grade) as average_grade
-        FROM Grades
-        INNER JOIN Courses
-        ON Courses.course_ID = Grades.course_ID
-        WHERE Grades.course_ID = "${req.query.id}";
+        SELECT Courses.course_ID, Courses.name, 
+        CASE
+        WHEN EXISTS(SELECT Grades.course_ID FROM Grades WHERE Grades.course_ID = "${req.query.id}") THEN (SELECT AVG(Grades.grade) as average_grade FROM Grades WHERE Grades.course_ID = "${req.query.id}")
+        END AS "average_grade"
+        FROM Courses
+        WHERE Courses.course_ID = "${req.query.id}";
       `;
       return await db.query(query, (err, data) => {
         if (err) {
