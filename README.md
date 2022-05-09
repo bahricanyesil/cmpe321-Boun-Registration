@@ -14,3 +14,7 @@ Then, under "src" directory you need to type following command in terminal to ex
 
 Now, the application is running, you can enter "http://localhost:3000" on your browser to reach the UI we designed.
 
+
+For implementing back-end operations, we used Node.js. We used "mysql" module for connecting our mysql database. We wrote all SQL queries, tables, triggers and stored procedures we need and used "mysql" module just to execute those queries. We also implemented necessary APIs and used those APIs with corresponding routings. 
+
+In the front-end of our application, we chose to use Flutter. We used Flutter widgets and APIs we created in our back-end application to complete our project.
