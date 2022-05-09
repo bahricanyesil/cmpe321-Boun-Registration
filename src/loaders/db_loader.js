@@ -122,9 +122,16 @@ const databaseManagerTableQuery = `CREATE TABLE IF NOT EXISTS DatabaseManager (
 const filterProcedure = `CREATE PROCEDURE IF NOT EXISTS
 filterCourses(IN campus VARCHAR(200), IN department_ID VARCHAR(200), IN min_credits INTEGER, IN max_credits INTEGER)
 BEGIN
-	SELECT * FROM Courses
+  SELECT Courses.course_ID, Courses.name, Instructors.surname, Courses.department_ID, Departments.name as department_name, Courses.credits, Courses.classroom_ID, Courses.time_slot, Courses.quota,
+  (SELECT GROUP_CONCAT(prerequisite_ID SEPARATOR ', ') 
+    FROM Prerequisites 
+    WHERE Prerequisites.course_ID=Courses.course_ID
+    GROUP BY course_ID) AS prerequisites
+  FROM Courses
   INNER JOIN Classrooms
   ON Classrooms.classroom_ID = Courses.classroom_ID AND Classrooms.campus = campus
+  INNER JOIN Instructors ON Courses.instructor_username=Instructors.username
+  INNER JOIN Departments ON Courses.department_ID=Departments.department_ID
   WHERE Courses.department_ID = department_ID AND Courses.credits BETWEEN min_credits AND max_credits;
 END;`;
 
@@ -258,7 +265,6 @@ export default async () => {
     dbConnection.query(isGradingAllowedTrigger);
     dbConnection.query(isValidTimeSlotTrigger);
     dbConnection.query(removeEnrollmentTrigger);
-    console.log("Successfully connected to the database.");
     return dbConnection;
   } catch (err) {
     console.log("An error occurred while connecting to the database.");
